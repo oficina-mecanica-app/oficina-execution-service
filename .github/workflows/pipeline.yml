@@ -35,8 +35,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t seu-usuario/oficina-execution-service:latest .
-          docker push seu-usuario/oficina-execution-service:latest
+          docker build -t lucasscuissiatto/oficina-execution-service:latest .
+          docker push lucasscuissiatto/oficina-execution-service:latest
 
       - name: Set Kubernetes Context
         uses: azure/k8s-set-context@v3
