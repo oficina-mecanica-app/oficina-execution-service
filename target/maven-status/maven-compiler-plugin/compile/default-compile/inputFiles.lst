@@ -1,0 +1,6 @@
+/Users/lucasscuissiatto/Projects/tech-challenge-fase4/oficina-execution-service/src/main/java/br/com/fiap/oficina/OficinaApplication.java
+/Users/lucasscuissiatto/Projects/tech-challenge-fase4/oficina-execution-service/src/main/java/br/com/fiap/oficina/domain/model/ExecutionOrder.java
+/Users/lucasscuissiatto/Projects/tech-challenge-fase4/oficina-execution-service/src/main/java/br/com/fiap/oficina/infrastructure/configuration/ExecutionConsumer.java
+/Users/lucasscuissiatto/Projects/tech-challenge-fase4/oficina-execution-service/src/main/java/br/com/fiap/oficina/infrastructure/configuration/RabbitMQConfig.java
+/Users/lucasscuissiatto/Projects/tech-challenge-fase4/oficina-execution-service/src/main/java/br/com/fiap/oficina/infrastructure/repository/ExecutionRepository.java
+/Users/lucasscuissiatto/Projects/tech-challenge-fase4/oficina-execution-service/src/main/java/br/com/fiap/oficina/presentation/controller/ExecutionController.java
