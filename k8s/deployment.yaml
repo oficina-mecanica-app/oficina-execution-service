@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: execution-service
-        image: oficina-execution-service:latest
-        imagePullPolicy: Never
+        image: lucasscuissiatto/oficina-execution-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8082
         env:
