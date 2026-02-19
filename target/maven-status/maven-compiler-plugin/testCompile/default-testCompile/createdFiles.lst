@@ -1,0 +1,3 @@
+br/com/fiap/oficina/infrastructure/configuration/ExecutionConsumerTest.class
+br/com/fiap/oficina/infrastructure/configuration/RabbitMQConfigTest.class
+br/com/fiap/oficina/presentation/controller/ExecutionControllerTest.class

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: execution-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: execution-service
+  template:
+    metadata:
+      labels:
+        app: execution-service
+    spec:
+      containers:
+      - name: execution-service
+        image: oficina-execution-service:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8082
+        env:
+        - name: SPRING_DATA_MONGODB_URI
+          value: "mongodb://admin:admin_password@mongo-service:27017/oficina_execution?authSource=admin"
+        - name: SPRING_RABBITMQ_HOST
+          value: "rabbitmq-service"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: execution-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: execution-service
+  ports:
+  - port: 8082
+    targetPort: 8082
