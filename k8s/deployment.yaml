@@ -19,10 +19,21 @@ spec:
         ports:
         - containerPort: 8082
         env:
+        # Segredos vêm do Secret "oficina-secrets" (ver oficina-infra-k8s/secrets.example.yaml)
+        - name: MONGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: oficina-secrets
+              key: mongo-password
         - name: SPRING_DATA_MONGODB_URI
-          value: "mongodb://admin:admin_password@mongo-service:27017/oficina_execution?authSource=admin"
+          value: "mongodb://admin:$(MONGO_PASSWORD)@mongo-service:27017/oficina_execution?authSource=admin"
         - name: SPRING_RABBITMQ_HOST
           value: "rabbitmq-service"
+        - name: SPRING_RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: oficina-secrets
+              key: rabbitmq-password
 ---
 apiVersion: v1
 kind: Service
