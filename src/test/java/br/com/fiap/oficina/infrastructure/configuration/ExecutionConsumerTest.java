@@ -1,17 +1,21 @@
 package br.com.fiap.oficina.infrastructure.configuration;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 
 import br.com.fiap.oficina.domain.model.ExecutionOrder;
 import br.com.fiap.oficina.infrastructure.repository.ExecutionRepository;
@@ -38,6 +42,18 @@ public class ExecutionConsumerTest {
     @Test
     public void deveTratarExcecaoQuandoMensagemNaoTiverId() {
         Map<String, Object> message = new HashMap<>();
+
+        assertThrows(AmqpRejectAndDontRequeueException.class, () -> consumer.receiveMessage(message));
+
+        verify(repository, times(0)).save(any(ExecutionOrder.class));
+    }
+
+    @Test
+    public void naoDeveCriarExecucaoDuplicadaQuandoMensagemForReentregue() {
+        Map<String, Object> message = new HashMap<>();
+        message.put("serviceOrderId", 51L);
+
+        when(repository.findByServiceOrderId(51L)).thenReturn(Optional.of(new ExecutionOrder()));
 
         consumer.receiveMessage(message);
 

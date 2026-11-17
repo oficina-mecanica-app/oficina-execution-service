@@ -65,4 +65,13 @@ public class RabbitMQConfigTest {
         assertNotNull(converter);
         assertTrue(converter instanceof Jackson2JsonMessageConverter);
     }
+
+    @Test
+    public void deveCriarDeadLetterQueue() {
+        Queue queue = config.deadLetterQueue();
+
+        assertNotNull(queue);
+        assertEquals("oficina-execution-service.dlq", queue.getName());
+        assertTrue(queue.isDurable());
+    }
 }
