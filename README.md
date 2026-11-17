@@ -15,16 +15,16 @@ O **Execution Service** é responsável pela gestão operacional da oficina. Ele
 * **Java 21 / Spring Boot 3:** Base da aplicação.
 * **Spring Data JPA/MongoDB:** Persistência do histórico de execuções.
 * **RabbitMQ:** Recebimento de autorizações de serviço e envio de notificações de conclusão.
-* **JUnit 5 & Mockito:** Testes unitários com foco em estados de transição.)
+* **JUnit 5 & Mockito:** Testes unitários com foco em estados de transição.
 
 ## 🏗️ Arquitetura e Fluxo de Trabalho
 
 O serviço opera como o "consumidor final" da autorização de pagamento:
 
-1. **Aguardando Autorização**: O serviço monitora a fila `execution-payment-approved-queue.
-2. **Entrada na Fila**: Ao receber o evento de pagamento aprovado do `Billing Service, o serviço cria automaticamente uma `ExecutionOrder com status `PENDING.
-3. **Início da Manutenção**: Através do endpoint `/execution/{id}/start`, o mecânico assume a OS, alterando o status para `EM_EXECUCAO e registrando o timestamp de início.
-4. **Finalização e Notificação**: Ao concluir o reparo via endpoint `/finish, o serviço publica um evento na `execution-finished-queue para que o `OS Service possa encerrar o ciclo de vida da Ordem de Serviço.
+1. **Aguardando Autorização**: O serviço monitora a fila `execution-payment-approved-queue`.
+2. **Entrada na Fila**: Ao receber o evento de pagamento aprovado do `Billing Service`, o serviço cria automaticamente uma `ExecutionOrder` com status `PENDING`.
+3. **Início da Manutenção**: Através do endpoint `/execution/{id}/start`, o mecânico assume a OS, alterando o status para `EM_EXECUCAO` e registrando o timestamp de início.
+4. **Finalização e Notificação**: Ao concluir o reparo via endpoint `/finish`, o serviço publica um evento na `execution-finished-queue` para que o `OS Service` possa encerrar o ciclo de vida da Ordem de Serviço.
 
 
 ## 📥 Fila de Entrada (Consumer)
@@ -40,10 +40,10 @@ Este serviço foi desenvolvido seguindo as melhores práticas de manutenibilidad
 * **Rating A**: Qualidade estrutural de código e ausência de "Code Smells".
 * **Cobertura de Testes**: Superior a 90%, cobrindo todos os fluxos de sucesso e tratamento de exceções de mensagens.
 
-**Comandos de Teste::**
+**Comandos de Teste:**
 ```bash
 # Executar testes unitários
-mvn clean test
+./mvnw clean verify
 
 # Gerar análise no SonarQube
 mvn sonar:sonar \
@@ -51,4 +51,22 @@ mvn sonar:sonar \
   -Dsonar.host.url=http://localhost:9000 \
   -Dsonar.login=admin \
   -Dsonar.password=admin123
+```
+
+## 🛡️ Resiliência
+* **Retry com espera crescente**: 3 tentativas (1s, 2s) antes de desistir de uma mensagem.
+* **DLQ**: mensagens que falham em todas as tentativas vão para `oficina-execution-service.dlq`, com o motivo da falha nos headers (`x-exception-message`, `x-exception-stacktrace`).
+* **Idempotência**: se a mesma OS chegar duas vezes (reentrega), não é criada uma segunda ordem de execução.
+
+## ⚙️ Configuração
+
+Nenhum segredo fica no código. Os valores padrão de `application.properties` servem só para desenvolvimento local; em outros ambientes, use variáveis de ambiente (veja `.env.example`). No Kubernetes, os valores vêm do Secret `oficina-secrets` (modelo em `oficina-infra-k8s/secrets.example.yaml`).
+
+## 🐳 Como rodar a aplicação
+
+1. Suba as dependências (bancos, RabbitMQ, MailHog) com o docker-compose do repositório [`oficina-infra-k8s`](https://github.com/oficina-mecanica-app/oficina-infra-k8s).
+2. Execute:
+
+```bash
+./mvnw spring-boot:run
 ```
